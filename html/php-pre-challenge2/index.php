@@ -5,7 +5,7 @@ $array=explode(',', $_GET['array']);
 $count=count($array);
 for ($i=0;$i<$count;$i++) {
     if(count(array_keys($array,min($array)))>1){//最小値が二つ以上ある場合
-        $for_count=count(array_keys($array,min($array)));//最小値の個数を変数に代入
+        $for_count=count(array_keys($array,min($array)));//二つ以上ある最小値の個数を変数に代入
         for ($j=0;$j<$for_count;$j++){
             $min_sort[]=min($array);//最小値を代入
         }
