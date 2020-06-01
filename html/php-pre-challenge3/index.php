@@ -1,6 +1,7 @@
 <?php
 $limit = $_GET['target'];
-$limit = 18;
+settype($limit,"int");
+
 
 $dsn = 'mysql:dbname=test;host=mysql';
 $dbuser = 'test';
@@ -13,41 +14,37 @@ try{
 $dbdata = $db->query("SELECT * FROM prechallenge3");
 $prechallenge3 = $dbdata -> fetchAll();
 $value = array_column($prechallenge3,"value");
+
 rsort($value);
 $count=count($value);
 for($i=0; $i < $count;$i++){
     settype($value[$i],"int");
 }
-$i = 0;
-$j = 1;
-$k = 0;
 
-
-function array_json($value,$limit,$i){
-    if($i===0){
-        $j = 1;
-        $k = 0;
-    }
-    $range = array_slice($value,$j);
-    $diff = $limit - $value[$i];
+function array_json($value,$limit,$diff,$i,$j,$k,$check,$json,$answer){
+    global $json;
+    $range = array_slice($value,$i+$j);
     $max = $range[$k];
-    $answer=[$value[$i]];
-    $check =array();
-    $json =array();
+    if($j==1){
+        $answer=[$value[$i]];
+        $diff = $limit - $value[$i];
+    }
     if($i < count($value)){
-        if($diff>array_sum($range)){
+        if($diff>array_sum($range)&&$k<count($value)){
             unset($answer);
-            $j = 1;
+            $k++;
+            $j=1;
+            //スタートへ
+        }elseif($diff>array_sum($range)){
+            unset($answer);
             $k = 0;
             $i++;
+            $j=1;
             //スタートへ
-            array_json($value,$limit,$i);
         }elseif($diff<$max){
             $j++;
             //スタートへ
-            array_json($value,$limit,$i);
-        }elseif($diff>$max && in_array($max,$check)){
-            //$checkから$maxを削除
+        }elseif($diff>$max && in_array($max,array($check))){
             $check = array_diff($check,$max);
             $range = array_slice($value,$j++);
             $max = $range[$k];
@@ -55,35 +52,38 @@ function array_json($value,$limit,$i){
                 unset($answer);
                 $j = 1;
                 //スタートへ
-                array_json($value,$limit,$i);
+            }elseif($diff<$max){
+                $j++;
+                //スタートへ
             }elseif($diff>$max){
                 $diff = $diff - $max;
                 $j++;
                 $answer[] = $max;
                 //スタートへ
-                array_json($value,$limit,$i);
-            }     
+            }
         }elseif($diff>$max){
             $diff = $diff - $max;
             $j++;
             $answer[] = $max;
             //スタートへ
-            array_json($value,$limit,$i);
         }elseif($diff - $max===0 ){
             $answer[] = $max;
-            $check = $answer;
-            if(in_array($answer,$json)){
+            if(isset($json)&&in_array($answer,$json) ){
                 $k++;
+                $j=1;
                 unset($answer);
                 //スタートへ
-                array_json($value,$limit,$i);
             }else{
                 $json[] = $answer;
+                $check = $answer;
+                unset($answer);
+                $j = 1;
                 //スタートへ
-                array_json($value,$limit,$i);
             }
         }
+        array_json($value,$limit,$diff,$i,$j,$k,$check,$json,$answer);
     }
 }
-array_json($value,$limit,0);
+
+array_json($value,$limit,$diff,0,1,0,$check,$json,$answer);
 echo(json_encode($json));
