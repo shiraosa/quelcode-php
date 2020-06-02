@@ -26,7 +26,7 @@ try{
 $dbdata = $db->query("SELECT * FROM prechallenge3");
 $prechallenge3 = $dbdata -> fetchAll();
 $value = array_column($prechallenge3, "value");
-rsort($value);
+rsort($value);//降順が必須
 for($i = 0; $i < count($value); $i++){
     settype($value[$i],"int");
 }
