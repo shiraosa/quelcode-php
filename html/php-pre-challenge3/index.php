@@ -1,12 +1,12 @@
 <?php
 //targetが正の整数か確認
 $limit = $_GET['target'];
-if(!ctype_digit($limit)){
+if(! ctype_digit($limit)){
     http_response_code(400);
     exit();
 }
-settype($limit,"int");
-if($limit===0){
+settype($limit, "int");
+if($limit === 0){
     http_response_code(400);
     exit();
 }
@@ -27,7 +27,7 @@ $dbdata = $db->query("SELECT * FROM prechallenge3");
 $prechallenge3 = $dbdata -> fetchAll();
 $value = array_column($prechallenge3, "value");
 rsort($value);
-for($i=0; $i < count($value); $i++){
+for($i = 0; $i < count($value); $i++){
     settype($value[$i],"int");
 }
 
@@ -51,19 +51,26 @@ function array_json($value, $limit, $i, $j, $k){
     $max = $range[$k];
     //関数を終わらせるかどうか
     if($i < count($value)){
-        if($diff > array_sum($range) && $k < count($value)){
-            unset($answer);
-            $j = 1;
-            $k++;
-        }elseif($diff > array_sum($range) || $diff < 0){
+        if($diff < 0){
             unset($answer);
             $i++;
             $j = 1;
             $k = 0;
-        }elseif($diff<$max){
+        }elseif($diff > array_sum($range)){
+            if($k < count($value)){
+                unset($answer);
+                $j = 1;
+                $k++;
+            }else{
+                unset($answer);
+                $i++;
+                $j = 1;
+                $k = 0;
+            }
+        }elseif($diff < $max){
             //target13で[7,5.1]が得られた時に[7,2,3,1]を取りこぼさない措置
             if(isset($check) && in_array(min($answer),$check)){
-                $del_key=array_search(min($answer),$check);
+                $del_key = array_search(min($answer),$check);
                 unset($check[$del_key]);
                 $diff = $diff + min($answer);
                 array_pop($answer);
@@ -82,19 +89,19 @@ function array_json($value, $limit, $i, $j, $k){
                 array_pop($answer);
             }else{
                 $json[] = $answer;
-                $check=$answer;
+                $check = $answer;
                 unset($answer);
                 $j = 1;
             }
         }
-        array_json($value,$limit,$i,$j,$k);
+        array_json($value, $limit, $i, $j, $k);
     }
     if(is_null($json)){//組み合わせがない場合
-        $json=array();
+        $json = array();
     }
 }
 
-array_json($value,$limit,0,1,0);
+array_json($value, $limit, 0, 1, 0);
 
 //$jsonをjson形式で出力
 echo(json_encode($json));
