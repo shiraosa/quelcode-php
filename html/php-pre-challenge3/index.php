@@ -19,20 +19,20 @@ for($i=0; $i < $count;$i++){
     settype($value[$i],"int");
 }
 
-function array_json($value,$limit,$diff,$i,$j,$k,$json,$answer){
+function array_json($value,$limit,$diff,$i,$j,$k,$answer){
     global $json;
-    $range = array_slice($value,$i+$j);
-    $max = $range[$k];
     if($limit=== $value[$i]){
         $json[] = [$value[$i]];
         unset($answer);
         $i++;
-        array_json($value,$limit,$diff,$i,$j,$k,$json,$answer);
+        array_json($value,$limit,$diff,$i,$j,$k,$answer);
     }
     if($j===1){
         $answer=[$value[$i]];
         $diff = $limit - $value[$i];
     }
+    $range = array_slice($value,$i+$j);
+    $max = $range[$k];
     if($i < count($value)){//関数を終わらせるかどうか
         if($diff>array_sum($range) && $k < count($value)){
             unset($answer);
@@ -51,8 +51,8 @@ function array_json($value,$limit,$diff,$i,$j,$k,$json,$answer){
             $answer[] = $max;
         }elseif($diff - $max===0 ){
             $answer[] = $max;
-            if(isset($json)&&in_array($answer,$json) ){
-                $k++;
+            if(isset($json)&&in_array($answer,$json)){
+                $j++;
                 array_pop($answer);
             }else{
                 $json[] = $answer;
@@ -60,10 +60,9 @@ function array_json($value,$limit,$diff,$i,$j,$k,$json,$answer){
                 $j = 1;
             }
         }
-        array_json($value,$limit,$diff,$i,$j,$k,$json,$answer);
+        array_json($value,$limit,$diff,$i,$j,$k,$answer);
     }
 }
-
-array_json($value,$limit,$diff,0,1,0,$json,$answer);
-
+array_json($value,$limit,$diff,0,1,0,$answer);
 echo(json_encode($json));
+// [[19,11,3,1],[19,7,5,3],[17,13,3,1],[17,11,5,1],[13,11,7,3]]
