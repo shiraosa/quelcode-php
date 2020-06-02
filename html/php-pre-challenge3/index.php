@@ -1,6 +1,15 @@
 <?php
+//targetが正の整数か確認
 $limit = $_GET['target'];
+if(!ctype_digit($limit)){
+    http_response_code(400);
+    exit();
+}
 settype($limit,"int");
+if($limit===0){
+    http_response_code(400);
+    exit();
+}
 
 //DB接続
 $dsn = 'mysql:dbname=test;host=mysql';
@@ -46,7 +55,7 @@ function array_json($value, $limit, $i, $j, $k){
             unset($answer);
             $j = 1;
             $k++;
-        }elseif($diff > array_sum($range) or $diff < 0){
+        }elseif($diff > array_sum($range) || $diff < 0){
             unset($answer);
             $i++;
             $j = 1;
@@ -80,11 +89,12 @@ function array_json($value, $limit, $i, $j, $k){
         }
         array_json($value,$limit,$i,$j,$k);
     }
-    if(is_null($json)){
+    if(is_null($json)){//組み合わせがない場合
         $json=array();
     }
 }
 
 array_json($value,$limit,0,1,0);
 
+//$jsonをjson形式で出力
 echo(json_encode($json));
