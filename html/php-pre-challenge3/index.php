@@ -47,10 +47,9 @@ function array_json($value, $limit, $i, $j, $k){
         $answer = [$value[$i]];
         $diff = $limit - $value[$i];
     }
-    $range = array_slice($value, $i+$j);
-    $max = $range[$k];
-    //関数を終わらせるかどうか
-    if($i < count($value)){
+    $range = array_slice($value, $i+$j);//配列の範囲を絞る
+    $max = $range[$k];//絞られた配列の中で最大の数値
+    if($i < count($value)){//関数を終わらせるかどうか
         if($diff < 0){
             unset($answer);
             $i++;
@@ -68,8 +67,7 @@ function array_json($value, $limit, $i, $j, $k){
                 $k = 0;
             }
         }elseif($diff < $max){
-            //target13で[7,5.1]が得られた時に[7,2,3,1]を取りこぼさない措置
-            if(isset($check) && in_array(min($answer),$check)){
+            if(isset($check) && in_array(min($answer),$check)){//target13で[7,5.1]が得られた時に[7,2,3,1]を取りこぼさない措置
                 $del_key = array_search(min($answer),$check);
                 unset($check[$del_key]);
                 $diff = $diff + min($answer);
@@ -81,10 +79,9 @@ function array_json($value, $limit, $i, $j, $k){
             $diff = $diff - $max;
             $j++;
             $answer[] = $max;
-        }elseif($diff === $max){
+        }elseif($diff === $max){//合計値がlimitになった場合
             $answer[] = $max;
-            //target12で[7,5]が得られた時に[7,4,1]を取りこぼさない措置
-            if(isset($json)&&in_array($answer,$json)){
+            if(isset($json)&&in_array($answer,$json)){//target12で[7,5]が得られた時に[7,4,1]を取りこぼさない措置
                 $j++;
                 array_pop($answer);
             }else{
