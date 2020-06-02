@@ -12,11 +12,11 @@ try{
     echo "DB接続エラー:" . $e->getMessage();
     exit();
 }
+
+//DBの配列をソートと型変換
 $dbdata = $db->query("SELECT * FROM prechallenge3");
 $prechallenge3 = $dbdata -> fetchAll();
 $value = array_column($prechallenge3, "value");
-
-
 rsort($value);
 for($i=0; $i < count($value); $i++){
     settype($value[$i],"int");
@@ -24,11 +24,11 @@ for($i=0; $i < count($value); $i++){
 
 //合計値が$limitになる組み合わせを$jsonに保存する関数
 function array_json($value, $limit, $i, $j, $k){
-    global $json;
-    global $diff;
-    global $answer;
-    global $check;
-    if($limit === $value[$i]){//組み合わせなしでtargetになる場合
+    global $json;//合計値が$limitになる組み合わせを保存する変数
+    global $diff;//差を保存する変数
+    global $answer;//組み合わせを一時的に保存する変数
+    global $check;//取りこぼしがないか確認する変数
+    if($limit === $value[$i]){//組み合わせなしで$limitになる場合
         $json[] = [$value[$i]];
         unset($answer);
         $i++;
@@ -61,11 +61,11 @@ function array_json($value, $limit, $i, $j, $k){
             }else{
                 $j++;
             }
-        }elseif($diff>$max){
+        }elseif($diff > $max){
             $diff = $diff - $max;
             $j++;
             $answer[] = $max;
-        }elseif($diff ===$max){
+        }elseif($diff === $max){
             $answer[] = $max;
             //target12で[7,5]が得られた時に[7,4,1]を取りこぼさない措置
             if(isset($json)&&in_array($answer,$json)){
@@ -86,4 +86,5 @@ function array_json($value, $limit, $i, $j, $k){
 }
 
 array_json($value,$limit,0,1,0);
+
 echo(json_encode($json));
