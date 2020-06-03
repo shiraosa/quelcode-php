@@ -14,7 +14,6 @@ $dbpassword = 'test';
 try{
     $db = new PDO($dsn, $dbuser, $dbpassword);
 }catch(PDOException $e){
-    echo "DB接続エラー:" . $e->getMessage();
     http_response_code(500);
     exit();
 }
@@ -30,6 +29,10 @@ for($i = 0; $i < $value_count; $i++){
 
 //合計値が$limitになる組み合わせを$jsonに保存する関数
 function array_json($value, $limit, $i=0, $j=1, $k=0,$json=null,$diff=null,$answer=null,$check=null){
+    //$json;合計値が$limitになる組み合わせを保存する変数
+    //$diff;差を保存する変数
+    //$answer;組み合わせを一時的に保存する変数
+    //$check;取りこぼしがないか確認する変数
     if($limit === $value[$i]){//組み合わせなしで$limitになる場合
         $json[] = [$value[$i]];
         unset($answer);
@@ -42,15 +45,14 @@ function array_json($value, $limit, $i=0, $j=1, $k=0,$json=null,$diff=null,$answ
     }
     $range = array_slice($value, $i+$j);//配列の範囲を絞る
     $max = $range[$k];//絞られた配列の中で最大の数値
-    $value_count = count($value);
-    if($i < $value_count){//関数を終わらせるかどうか
+    if($i < count($value)){//関数を終わらせるかどうか
         if($diff < 0){
             unset($answer);
             $i++;
             $j = 1;
             $k = 0;
         }elseif($diff > array_sum($range)){
-            if($k < $value_count){
+            if($k < count($value)){
                 unset($answer);
                 $j = 1;
                 $k++;
@@ -90,6 +92,6 @@ function array_json($value, $limit, $i=0, $j=1, $k=0,$json=null,$diff=null,$answ
     return $json;
 }
 
-$out = array_json($value, $limit);
-//$jsonをjson形式で出力
-echo(json_encode($out));
+$out_json = array_json($value, $limit);
+//$out_jsonをjson形式で出力
+echo(json_encode($out_json));
