@@ -1,33 +1,30 @@
 <?php
 //targetが正の整数か確認
 $limit = $_GET['target'];
-if(! ctype_digit($limit)){
+if(! ctype_digit($limit) || substr("$limit",0,1)==0){
     http_response_code(400);
     exit();
 }
 settype($limit, "int");
-if($limit === 0){
-    http_response_code(400);
-    exit();
-}
 
 //DB接続
 $dsn = 'mysql:dbname=test;host=mysql';
 $dbuser = 'test';
 $dbpassword = 'test';
 try{
-    $db = new PDO("$dsn", "$dbuser", "$dbpassword");
+    $db = new PDO($dsn, $dbuser, $dbpassword);
 }catch(PDOException $e){
     echo "DB接続エラー:" . $e->getMessage();
+    http_response_code(500);
     exit();
 }
 
 //DBの配列をソートと型変換
-$dbdata = $db->query("SELECT * FROM prechallenge3");
+$dbdata = $db->query("SELECT * FROM prechallenge3 ORDER BY value DESC");
 $prechallenge3 = $dbdata -> fetchAll();
 $value = array_column($prechallenge3, "value");
-rsort($value);//降順が必須
-for($i = 0; $i < count($value); $i++){
+$value_count = count($value);
+for($i = 0; $i < $value_count; $i++){
     settype($value[$i],"int");
 }
 
@@ -49,14 +46,15 @@ function array_json($value, $limit, $i, $j, $k){
     }
     $range = array_slice($value, $i+$j);//配列の範囲を絞る
     $max = $range[$k];//絞られた配列の中で最大の数値
-    if($i < count($value)){//関数を終わらせるかどうか
+    $value_count = count($value);
+    if($i < $value_count){//関数を終わらせるかどうか
         if($diff < 0){
             unset($answer);
             $i++;
             $j = 1;
             $k = 0;
         }elseif($diff > array_sum($range)){
-            if($k < count($value)){
+            if($k < $value_count){
                 unset($answer);
                 $j = 1;
                 $k++;
