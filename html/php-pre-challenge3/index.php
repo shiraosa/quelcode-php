@@ -29,16 +29,12 @@ for($i = 0; $i < $value_count; $i++){
 }
 
 //合計値が$limitになる組み合わせを$jsonに保存する関数
-function array_json($value, $limit, $i, $j, $k){
-    global $json;//合計値が$limitになる組み合わせを保存する変数
-    global $diff;//差を保存する変数
-    global $answer;//組み合わせを一時的に保存する変数
-    global $check;//取りこぼしがないか確認する変数
+function array_json($value, $limit, $i=0, $j=1, $k=0,$json=null,$diff=null,$answer=null,$check=null){
     if($limit === $value[$i]){//組み合わせなしで$limitになる場合
         $json[] = [$value[$i]];
         unset($answer);
         $i++;
-        array_json($value, $limit, $i, $j, $k);
+        array_json($value, $limit, $i, $j, $k, $json, $diff, $answer, $check);
     }
     if($j === 1){
         $answer = [$value[$i]];
@@ -89,14 +85,11 @@ function array_json($value, $limit, $i, $j, $k){
                 $j = 1;
             }
         }
-        array_json($value, $limit, $i, $j, $k);
+        array_json($value, $limit, $i, $j, $k, $json, $diff, $answer, $check);
     }
-    if(is_null($json)){//組み合わせがない場合
-        $json = array();
-    }
+    return $json;
 }
 
-array_json($value, $limit, 0, 1, 0);
-
+$out = array_json($value, $limit);
 //$jsonをjson形式で出力
-echo(json_encode($json));
+echo(json_encode($out));
