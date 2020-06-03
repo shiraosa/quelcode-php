@@ -34,7 +34,7 @@ function array_json($value, $limit, $i=0, $j=1, $k=0,$json=null,$diff=null,$answ
         $json[] = [$value[$i]];
         unset($answer);
         $i++;
-        array_json($value, $limit, $i, $j, $k, $json, $diff, $answer, $check);
+        return array_json($value, $limit, $i, $j, $k, $json, $diff, $answer, $check);
     }
     if($j === 1){
         $answer = [$value[$i]];
@@ -85,7 +85,7 @@ function array_json($value, $limit, $i=0, $j=1, $k=0,$json=null,$diff=null,$answ
                 $j = 1;
             }
         }
-        array_json($value, $limit, $i, $j, $k, $json, $diff, $answer, $check);
+        return array_json($value, $limit, $i, $j, $k, $json, $diff, $answer, $check);
     }
     return $json;
 }
