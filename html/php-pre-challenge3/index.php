@@ -48,6 +48,7 @@ function array_json($values, $limit, $i = 0, $j = 1, $k = 0, $json = array(), $d
     if($i < count($values)){//関数を終わらせるかどうか
         if($diff < 0){
             unset($answer);
+            unset($check);
             $i++;
             $j = 1;
             $k = 0;
@@ -58,6 +59,7 @@ function array_json($values, $limit, $i = 0, $j = 1, $k = 0, $json = array(), $d
                 $k++;
             }else{
                 unset($answer);
+                unset($check);
                 $i++;
                 $j = 1;
                 $k = 0;
