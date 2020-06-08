@@ -19,7 +19,7 @@ try{
 }
 
 //DBの配列をソートと型変換
-$dbdata = $db -> query("SELECT * FROM prechallenge3 ORDER BY value DESC");
+$dbdata = $db -> query("SELECT * FROM prechallenge3");
 $prechallenge3 = $dbdata -> fetchAll();
 $values = array_column($prechallenge3, "value");
 $values_count = count($values);
