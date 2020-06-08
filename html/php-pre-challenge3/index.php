@@ -33,13 +33,13 @@ function array_combi($values, $pick){
     if($count_values < $pick ){
         return;
     }elseif($pick === 1){
-        for($i =0; $i < $count_values; $i++){
+        for($i = 0; $i < $count_values; $i++){
             $array_combi[$i] = array($values[$i]);
         }
     }elseif($pick > 1){
         $j = 0;
         for($i = 0; $i < $count_values - $pick + 1; $i++){
-            $read_array_combi = array_combi(array_slice($values, $i+1), $pick-1);
+            $read_array_combi = array_combi(array_slice($values, $i + 1), $pick - 1);
             foreach($read_array_combi as $combi){
                 array_unshift($combi, $values[$i]);
                 $array_combi[$j] = $combi;
@@ -58,7 +58,7 @@ for($i = 1; $i <= $values_count; $i++){
 }
 
 //$limitと$checkを照合
-$answer =array();
+$answer = array();
 foreach($all_array_combi as $check){
     if(array_sum($check) === $limit){
         $answer[] = $check; 
