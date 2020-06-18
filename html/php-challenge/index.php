@@ -32,7 +32,7 @@ if (!empty($_POST)) {
 
 // 投稿を取得する
 $page = $_REQUEST['page'];
-if ($page == '') {
+if ($page === '') {
 	$page = 1;
 }
 $page = max($page, 1);
@@ -146,7 +146,7 @@ function makeLink($value)
 						endif;
 						?>
 						<?php
-						if ($_SESSION['id'] == $post['member_id']) :
+						if ($_SESSION['id'] === $post['member_id']) :
 						?>
 							[<a href = "delete.php?id=<?php echo h($post['id']); ?>" style = "color: #F33;">削除</a>]
 						<?php
@@ -162,11 +162,11 @@ function makeLink($value)
 						}
 						if(in_array($_SESSION['id'],(array)$rt_check)){
 						?>
-							<a href="retweet.php?id=<?php echo h($post['id']); ?>" alt="リツイート"><i class = "material-icons" style = "vertical-align: middle;color:limegreen">repeat</i></a>
+							<a href="retweet.php?id=<?php echo h($post['id']); ?>" alt="リツイート"><i class="material-icons" style="vertical-align: middle;color:limegreen">repeat</i></a>
 						<?php
 						}else{
 						?>
-							<a href="retweet.php?id=<?php echo h($post['id']); ?>" alt="リツイート"><i class = "material-icons" style = "vertical-align: middle;">repeat</i></a>
+							<a href="retweet.php?id=<?php echo h($post['id']); ?>" alt="リツイート"><i class="material-icons" style="vertical-align: middle;">repeat</i></a>
 						<?PHP
 						}
 						?>

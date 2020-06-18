@@ -17,6 +17,9 @@ if (isset($_SESSION['id'])) {
 		//RTの削除
 		$del_retweet = $db->prepare('DELETE FROM posts WHERE original_post_id=?'); 
 		$del_retweet->execute(array($id));
+		//いいねを削除
+		$del_like = $db->prepare('DELETE FROM likes WHERE post_id=?');
+		$del_like->execute(array($id));
 	}
 }
 
