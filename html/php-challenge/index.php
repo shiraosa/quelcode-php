@@ -6,7 +6,7 @@ if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {
 	// ログインしている
 	$_SESSION['time'] = time();
 
-	$members = $db->prepare('SELECT * FROM members WHERE id=?');
+	$members = $db->prepare('SELECT * FROM members WHERE id = ?');
 	$members->execute(array($_SESSION['id']));
 	$member = $members->fetch();
 } else {
@@ -113,8 +113,26 @@ function makeLink($value)
 
 			<?php
 			foreach ($posts as $post) :
+				//RTの場合
+				if(!is_null($post['original_post_id'])){
+					$origin_post = $db->prepare('SELECT m.name, m.picture, p.* FROM members m, posts p WHERE m.id=p.member_id AND p.id=?');
+					$origin_post->execute(array($post['original_post_id']));
+					$origin = $origin_post->fetch();
+					$retweet_from = $post['name'];
+					$post['name'] = $origin['name'];
+					$post['picture'] = $origin['picture'];
+					$post['member_id'] = $origin['member_id'];
+					$post['id'] = $post['original_post_id'];
+				}
 			?>
 				<div class="msg">
+					<?php
+					if(!is_null($post['original_post_id'])){
+					?>
+						<p style="font-size:12px;margin-left:48px;"><?php echo $retweet_from."さんがリツイートしました";?></p>
+					<?PHP
+					}
+					?>
 					<img src="member_picture/<?php echo h($post['picture']); ?>" width="48" height="48" alt="<?php echo h($post['name']); ?>" />
 					<p><?php echo makeLink(h($post['message'])); ?><span class="name">（<?php echo h($post['name']); ?>）</span>[<a href="index.php?res=<?php echo h($post['id']); ?>">Re</a>]</p>
 					<p class="day"><a href="view.php?id=<?php echo h($post['id']); ?>"><?php echo h($post['created']); ?></a>
@@ -134,8 +152,33 @@ function makeLink($value)
 						<?php
 						endif;
 						?>
-						<a><i class = "material-icons" style = "vertical-align: middle;">repeat</i></a>
-
+						<?php
+						//RT機能
+						$rtweets = $db->prepare('SELECT member_id FROM posts WHERE original_post_id=?');
+						$rtweets->execute(array($post['id']));
+						unset($rt_check);
+						foreach($rtweets as $rt){
+							$rt_check[] = $rt['member_id'];  
+						}
+						if(in_array($_SESSION['id'],(array)$rt_check)){
+						?>
+							<a href="retweet.php?id=<?php echo h($post['id']); ?>" alt="リツイート"><i class = "material-icons" style = "vertical-align: middle;color:limegreen">repeat</i></a>
+						<?php
+						}else{
+						?>
+							<a href="retweet.php?id=<?php echo h($post['id']); ?>" alt="リツイート"><i class = "material-icons" style = "vertical-align: middle;">repeat</i></a>
+						<?PHP
+						}
+						?>
+						<?php
+						//RT件数表示
+						$rtweets_count = $db->prepare('SELECT COUNT(*) FROM posts WHERE original_post_id=?');
+						$rtweets_count->execute(array($post['id']));
+						$rtweet_count = $rtweets_count->fetchColumn();
+						if($rtweet_count > 0){
+							echo $rtweet_count;
+						}
+							?>
 						<?php
 						//いいね機能
 						$likes = $db->prepare('SELECT * FROM likes WHERE post_id = ?');
@@ -147,18 +190,18 @@ function makeLink($value)
 						if(in_array($_SESSION['id'],(array)$like_check)){
 						?>
 							<a href="like.php?id=<?php echo h($post['id']); ?>" alt="いいね"><i class="material-icons" style="vertical-align: middle;color:red">favorite</i></a>
-							<?php
-							//いいね件数
-							$likes_count = $db->prepare('SELECT  COUNT(*) AS likes_count FROM likes WHERE post_id = ?');
-							$likes_count->execute(array($post['id']));
-							$like_count = $likes_count->fetchColumn();
-							echo $like_count;
-							?>
 						<?php
 						}else{
 						?>
 							<a href="like.php?id=<?php echo h($post['id']); ?>" alt="いいね"><i class="material-icons" style="vertical-align: middle;">favorite</i></a>
 						<?php
+						}
+						//いいね件数表示
+						$likes_count = $db->prepare('SELECT  COUNT(*) AS likes_count FROM likes WHERE post_id = ?');
+						$likes_count->execute(array($post['id']));
+						$like_count = $likes_count->fetchColumn();
+						if($like_count > 0){
+							echo $like_count;
 						}
 						?>
 					</p>
