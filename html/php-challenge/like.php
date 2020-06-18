@@ -2,7 +2,7 @@
 session_start();
 require('dbconnect.php');
 
-$likes = $db->prepare('SELECT * FROM likes WHERE post_id = ? AND member_id=?');
+$likes = $db->prepare('SELECT * FROM likes WHERE post_id=? AND member_id=?');
 $likes->execute(array($_REQUEST['id'],$_SESSION['id']));
 
 if($likes->fetch()){

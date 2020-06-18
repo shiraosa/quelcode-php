@@ -148,7 +148,7 @@ function makeLink($value)
 						<?php
 						if ($_SESSION['id'] === $post['member_id']) :
 						?>
-							[<a href = "delete.php?id=<?php echo h($post['id']); ?>" style = "color: #F33;">削除</a>]
+							[<a href="delete.php?id=<?php echo h($post['id']); ?>" style = "color: #F33;">削除</a>]
 						<?php
 						endif;
 						?>
@@ -197,7 +197,7 @@ function makeLink($value)
 						<?php
 						}
 						//いいね件数表示
-						$likes_count = $db->prepare('SELECT  COUNT(*) AS likes_count FROM likes WHERE post_id = ?');
+						$likes_count = $db->prepare('SELECT  COUNT(*) AS likes_count FROM likes WHERE post_id=?');
 						$likes_count->execute(array($post['id']));
 						$like_count = $likes_count->fetchColumn();
 						if($like_count > 0){
